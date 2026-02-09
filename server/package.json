@@ -16,7 +16,12 @@
     "cors": "^2.8.6",
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
-    "ts-node": "^10.9.2"
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "satellite.js": "^6.0.2",
+    "tle": "^3.0.1",
+    "ts-node": "^10.9.2",
+    "url": "^0.11.4"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
