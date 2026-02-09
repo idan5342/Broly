@@ -21,6 +21,8 @@ export const getApproaches = () => {
     const filteredTLEs = filterTLEs(tleData, tle, 100);
 
     console.log('Filtered TLEs:', filteredTLEs.length, 'entries');
+
+    
 }
 
 getApproaches()

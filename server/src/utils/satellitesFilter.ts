@@ -7,10 +7,8 @@ export const filterTLEs = (tles: TLE[], chosenTLE: TLE, maxDistance: number) => 
         if (new Date().getTime() - parseTLE(tle).date.getTime() > 7 * 24 * 60 * 60 * 1000) return false
         
         const { perigee, apogee } = getHeights(tle)
-        const closePerigee = Math.abs(perigee - chosenPerigee) < maxDistance * 1.1
-        const closepPerigeeToApogee = Math.abs(perigee - chosenApogee) < maxDistance * 1.1
-        const closeApogee = Math.abs(apogee - chosenApogee) < maxDistance * 1.1
-        const closeApogeeToPerigee = Math.abs(apogee - chosenPerigee) < maxDistance * 1.1
-        return closePerigee || closepPerigeeToApogee || closeApogee || closeApogeeToPerigee
+        const farPerigee = chosenPerigee > apogee + maxDistance * 1.1
+        const farApogee = chosenApogee < perigee - maxDistance * 1.1
+        return !farPerigee && !farApogee
         })
 }
