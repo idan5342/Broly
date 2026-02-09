@@ -8,7 +8,9 @@ export const filterTLEs = (tles: TLE[], chosenTLE: TLE, maxDistance: number) => 
         
         const { perigee, apogee } = getHeights(tle)
         const closePerigee = Math.abs(perigee - chosenPerigee) < maxDistance * 1.1
+        const closepPerigeeToApogee = Math.abs(perigee - chosenApogee) < maxDistance * 1.1
         const closeApogee = Math.abs(apogee - chosenApogee) < maxDistance * 1.1
-        return closePerigee && closeApogee
+        const closeApogeeToPerigee = Math.abs(apogee - chosenPerigee) < maxDistance * 1.1
+        return closePerigee || closepPerigeeToApogee || closeApogee || closeApogeeToPerigee
         })
 }
