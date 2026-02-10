@@ -5,6 +5,8 @@ import { filterTLEs } from "../utils/satellitesFilter.js";
 import type { Timeframe } from "../../types/time.js";
 import type { Position, TLE } from "../../types/satellite.js";
 import { getSatellitePositions, getSatRec } from "../utils/propagation.js";
+import type { Request, Response } from "express";
+
 
 import os from "os";
 import { Worker } from "worker_threads";
@@ -60,7 +62,14 @@ const chosenSatPositions: Position[] = getSatellitePositions(
 
 let approaches: { tle2: TLE; time: Date; distance: number }[] = [];
 
-async function run(tles: TLE[]) {
+async function run(tles: TLE[], chosenTLE: TLE) {
+    
+    const chosenSatPositions: Position[] = getSatellitePositions(
+    getSatRec(chosenTLE),
+    timeframe,
+    step,
+    );
+
   const batches = chunk(tles, BATCH_SIZE);
   let nextBatch = 0;
 
@@ -92,5 +101,13 @@ async function run(tles: TLE[]) {
   await Promise.all(pool);
 }
 
-
-run(filteredTLEs);
+export const getApproaches = async (req: Request, res: Response) => {
+    try{
+        const { tle: chosenTLE } = req.body;
+        const approaches = await run(filteredTLEs, chosenTLE);
+        res.json(approaches);
+    } catch (error) {
+        console.error("Error getting approaches:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
