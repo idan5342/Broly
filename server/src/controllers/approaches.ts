@@ -37,10 +37,11 @@ const step = 10;
 
 async function run(tles: TLE[], chosenTLE: TLE) {
   let approaches: { tle2: TLE; time: Date; distance: number }[] = [];
+
   const chosenSatPositions: Position[] = getSatellitePositions(
     getSatRec(chosenTLE),
     timeframe,
-    step,
+    step
   );
 
   const BATCH_SIZE = tles.length / 5;
@@ -51,6 +52,7 @@ async function run(tles: TLE[], chosenTLE: TLE) {
   function spawnWorker(): Promise<void> {
     return new Promise((resolve) => {
       if (nextBatch >= batches.length) return resolve();
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
       const worker = new Worker(path.resolve(__dirname, "worker.js"));
 
