@@ -1,5 +1,8 @@
 import type { TLE } from "../../types/satellite.js";
-import { getHeights, parseTLE } from "./propagation.js";
+import { getHeights } from "./propagation.js";
+import * as fs from "fs";
+import * as path from "path";
+import { fileURLToPath } from "url";
 
 export const filterTLEs = (
   tles: TLE[],
@@ -17,3 +20,12 @@ export const filterTLEs = (
     return !farPerigee && !farApogee;
   });
 };
+
+export const getTLEsFromJSON = () => {
+      const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  
+      const tlePath = path.join(__dirname, "../../../data/tles.json");
+      const tleData = JSON.parse(fs.readFileSync(tlePath, "utf-8"));
+
+      return tleData as TLE[];
+}

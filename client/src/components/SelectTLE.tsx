@@ -8,9 +8,9 @@ interface TLE {
   line2: string;
 }
 
-export default function SelectTLE({ setSelectedSatellite }) {
+export default function SelectTLE({ setSelectedSatellite } : { setSelectedSatellite: (tle: TLE | null) => void }) {
   const [tles, setTles] = useState<TLE[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedTLE, setSelectedTLE] = useState<TLE | null>(null);
 
   useEffect(() => {
@@ -31,8 +31,9 @@ export default function SelectTLE({ setSelectedSatellite }) {
 
   return (
     <Autocomplete
+    sx={{ width: 300 }}
       options={tles}
-      getOptionLabel={(option) => option.satellite}
+      getOptionLabel={(option) => `${option.satellite} (${option.line1.substring(2, 7)})`}
       value={selectedTLE}
       onChange={(event, newValue) => {
         setSelectedTLE(newValue);
@@ -43,14 +44,16 @@ export default function SelectTLE({ setSelectedSatellite }) {
         <TextField
           {...params}
           label="Select TLE"
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <>
-                {loading && <CircularProgress color="inherit" size={20} />}
-                {params.InputProps.endAdornment}
-              </>
-            ),
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {loading && <CircularProgress color="inherit" size={20} />}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
           }}
         />
       )}

@@ -8,15 +8,25 @@ import {
   TableRow,
   Paper,
   CircularProgress,
+  Typography,
+  Stack,
 } from "@mui/material";
 import SelectTLE from "./components/SelectTLE";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { SelectStep } from "./components/SelectStep";
+
+interface TLE {
+  satellite: string;
+  line1: string;
+  line2: string;
+}
 
 function App() {
-  const [approaches, setApproaches] = useState([]);
-  const [selectedSatellite, setSelectedSatellite] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [approaches, setApproaches] = useState<any[]>([]);
+  const [selectedSatellite, setSelectedSatellite] = useState<TLE | null>(null);
+  const [step, setStep] = useState<number>(10);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const getApproaches = async () => {
@@ -27,6 +37,7 @@ function App() {
             "http://localhost:5000/approaches/",
             {
               tle: selectedSatellite,
+              step: step,
             }
           );
           setApproaches(data);
@@ -42,7 +53,13 @@ function App() {
 
   return (
     <>
+    <Stack direction="row" spacing={2} alignItems="center" padding={2} width={500}>
       <SelectTLE setSelectedSatellite={setSelectedSatellite} />
+      <SelectStep step={step} setStep={setStep} />
+      </Stack>
+      {selectedSatellite && (<Typography variant="h6" gutterBottom>
+        Found {approaches?.length} approaches for: {selectedSatellite ? selectedSatellite.satellite : "None"}
+      </Typography>)}
       {!isLoading ? (
         <TableContainer component={Paper}>
           <Table>
