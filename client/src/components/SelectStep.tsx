@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { TextField, Box, Button, InputAdornment } from '@mui/material';
+import React from 'react';
+import { TextField, Box, InputAdornment } from '@mui/material';
 
 interface SelectStepProps {
     step: number;
@@ -14,7 +14,7 @@ export const SelectStep: React.FC<SelectStepProps> = ({ step, setStep}) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', padding: 2 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center',width: 200 }}>
       <TextField
         type="number"
         label="Step Size"
@@ -22,7 +22,7 @@ export const SelectStep: React.FC<SelectStepProps> = ({ step, setStep}) => {
         onChange={handleChange}
         variant="outlined"
         slotProps={{ htmlInput: { min: 1, max: 60 }, input: {
-            endAdornment: <InputAdornment position="end">seconds</InputAdornment>
+            endAdornment: <InputAdornment position="end">sec</InputAdornment>
         } }}
       />
     </Box>

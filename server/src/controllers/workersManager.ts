@@ -23,7 +23,8 @@ export async function runWorkersForApproaches(
     tles: TLE[],
     chosenTLE: TLE,
     timeframe: Timeframe,
-    step: number
+    step: number,
+    maxDistance: number
 ) {
   let approaches: { tle2: TLE; time: Date; distance: number }[] = [];
 
@@ -49,7 +50,7 @@ export async function runWorkersForApproaches(
       worker.postMessage({
         chosenSatPositions,
         batch,
-        maxDistance: 100,
+        maxDistance,
         step,
       });
 

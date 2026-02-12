@@ -15,6 +15,7 @@ import SelectTLE from "./components/SelectTLE";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { SelectStep } from "./components/SelectStep";
+import { SelectDistance } from "./components/SelectDistance";
 
 interface TLE {
   satellite: string;
@@ -26,6 +27,7 @@ function App() {
   const [approaches, setApproaches] = useState<any[]>([]);
   const [selectedSatellite, setSelectedSatellite] = useState<TLE | null>(null);
   const [step, setStep] = useState<number>(10);
+  const [distance, setDistance] = useState<number>(100); 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -38,6 +40,7 @@ function App() {
             {
               tle: selectedSatellite,
               step: step,
+              distance: distance
             }
           );
           setApproaches(data);
@@ -56,6 +59,7 @@ function App() {
     <Stack direction="row" spacing={2} alignItems="center" padding={2} width={500}>
       <SelectTLE setSelectedSatellite={setSelectedSatellite} />
       <SelectStep step={step} setStep={setStep} />
+      <SelectDistance distance={distance} setDistance={setDistance} />
       </Stack>
       {selectedSatellite && (<Typography variant="h6" gutterBottom>
         Found {approaches?.length} approaches for: {selectedSatellite ? selectedSatellite.satellite : "None"}
