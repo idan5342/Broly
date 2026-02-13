@@ -1,5 +1,11 @@
+import { get } from "node:http";
 import type { Position, TLE } from "../../types/satellite.js";
-import { getPosition, getSatRec } from "./propagation.js";
+import { Timeframe } from "../../types/time.js";
+import {
+  getPosition,
+  getSatellitePositions,
+  getSatRec,
+} from "./propagation.js";
 
 const calculateDistance = (pos1: Position, pos2: Position) => {
   const dx = pos1.x - pos2.x;
@@ -22,12 +28,14 @@ const stepsTillCloser = (
 };
 
 export const calculateApproachesOneTLE = (
+  chosenTLE: TLE,
   chosenSatPositions: Position[],
   tle2: TLE,
   maxDistance: number,
   step: number, // in seconds
 ) => {
-  const approaches: { tle2: TLE; time: Date; distance: number }[] = [];
+  const approaches: { id: string; tle2: TLE; time: Date; distance: number }[] =
+    [];
 
   const tle2SatRec = getSatRec(tle2);
 
@@ -54,11 +62,40 @@ export const calculateApproachesOneTLE = (
       if (tle2Position) {
         const distance = calculateDistance(chosenSatPosition, tle2Position);
         if (distance < maxDistance * 1.05) {
-          approaches.push({
-            tle2: tle2,
-            time: chosenSatPosition.time,
-            distance,
-          });
+          const approach = getCloseApproach(
+            chosenTLE,
+            tle2,
+            {
+              start: new Date(
+                new Date(chosenSatPosition.time).getTime() - (step - 1) * 1000,
+              ),
+              end: new Date(
+                new Date(chosenSatPosition.time).getTime() + (step - 1) * 1000,
+              ),
+            },
+            0.5,
+          );
+          if (!approaches.length) {
+            approaches.push({
+              id: `${tle2.satellite}-${approach.time.getTime()}`,
+              tle2: tle2,
+              time: approach.time,
+              distance: approach.distance,
+            });
+          } else {
+            const lastApproach = approaches[approaches.length - 1];
+            if (
+              lastApproach?.id !==
+              `${tle2.satellite}-${approach.time.getTime()}`
+            ) {
+              approaches.push({
+                id: `${tle2.satellite}-${approach.time.getTime()}`,
+                tle2: tle2,
+                time: approach.time,
+                distance: approach.distance,
+              });
+            }
+          }
         } else {
           stepsToWait = stepsTillCloser(distance - maxDistance, 20, step) - 1;
         }
@@ -69,6 +106,7 @@ export const calculateApproachesOneTLE = (
 };
 
 export const calculateApproaches = (
+  chosenTLE: TLE,
   chosenSatPositions: Position[],
   tles: TLE[],
   maxDistance: number,
@@ -79,6 +117,7 @@ export const calculateApproaches = (
   const approaches = tles.reduce(
     (acc, tle) => {
       const currentApproaches = calculateApproachesOneTLE(
+        chosenTLE,
         chosenSatPositions,
         tle,
         maxDistance,
@@ -94,4 +133,35 @@ export const calculateApproaches = (
   console.log("Approaches found:", approaches?.length);
 
   return approaches;
+};
+
+const getCloseApproach = (
+  chosenTLE: TLE,
+  tle2: TLE,
+  timeframe: Timeframe,
+  step: number,
+) => {
+  const chosenSatRec = getSatRec(chosenTLE);
+  const tle2SatRec = getSatRec(tle2);
+
+  let closestApproach = { time: timeframe.start, distance: Infinity };
+
+  for (
+    let time = timeframe.start.getTime();
+    time <= timeframe.end.getTime();
+    time += step * 1000
+  ) {
+    const currentTime = new Date(time);
+    const chosenSatPosition = getPosition(chosenSatRec, currentTime);
+    const tle2Position = getPosition(tle2SatRec, currentTime);
+
+    if (chosenSatPosition && tle2Position) {
+      const distance = calculateDistance(chosenSatPosition, tle2Position);
+      if (distance < closestApproach.distance) {
+        closestApproach = { time: currentTime, distance: distance };
+      }
+    }
+  }
+
+  return closestApproach;
 };

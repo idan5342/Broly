@@ -48,6 +48,7 @@ export async function runWorkersForApproaches(
 
       const batch = batches[nextBatch++];
       worker.postMessage({
+        chosenTLE,
         chosenSatPositions,
         batch,
         maxDistance,

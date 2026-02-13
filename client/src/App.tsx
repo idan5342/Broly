@@ -77,7 +77,7 @@ function App() {
             <TableBody>
               {approaches?.map((approach) => {
                 return (
-                  <TableRow key={approach.time}>
+                  <TableRow key={`approach-${approach.id}`}>
                     <TableCell>{approach.tle2.satellite}</TableCell>
                     <TableCell>{approach.time}</TableCell>
                     <TableCell>{approach.distance}</TableCell>

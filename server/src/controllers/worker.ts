@@ -6,9 +6,10 @@ if (!parentPort) {
 }
 
 parentPort.on("message", (msg) => {
-  const { chosenSatPositions, batch, maxDistance, step } = msg;
+  const { chosenTLE, chosenSatPositions, batch, maxDistance, step } = msg;
 
   const results = calculateApproaches(
+    chosenTLE,
     chosenSatPositions,
     batch,
     maxDistance,
